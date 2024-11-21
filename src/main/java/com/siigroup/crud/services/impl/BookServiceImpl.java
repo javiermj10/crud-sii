@@ -40,10 +40,16 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public BookEntity updateBook(BookEntity book) {
+        bookRepository.findById(book.getId()).orElseThrow(() ->
+                new IllegalArgumentException("El libro no existe.")
+        );
         return bookRepository.save(book);
     }
 
     public void deleteBook(Long id) {
+        bookRepository.findById(id).orElseThrow(() ->
+                new IllegalArgumentException("El libro no existe.")
+        );
         bookRepository.deleteById(id);
     }
 }

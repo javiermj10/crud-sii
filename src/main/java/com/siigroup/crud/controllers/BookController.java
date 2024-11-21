@@ -27,11 +27,16 @@ public class BookController {
      * @return lista de books.
      */
     @GetMapping("/find")
-    public ResponseDTO<List<BookEntity>> getAllBooks() {
-        try {
-            return new ResponseDTO<>("Libros encontrados",true,bookService.findAll());
-        }catch (Exception e) {
-            return new ResponseDTO<>("Libros no encontrados",false,null);
+    public ResponseDTO<List<BookEntity>> getAllBooks(){
+        try{
+            List<BookEntity> books = bookService.findAll();
+            if (!books.isEmpty()) {
+                return new ResponseDTO<>("Libros encontrados",true,books);
+            }else{
+                return new ResponseDTO<>("No hay libros",false,null);
+            }
+        }catch(Exception e){
+            return new ResponseDTO<>(e.getLocalizedMessage(),false,null);
         }
     }
 
@@ -44,10 +49,15 @@ public class BookController {
 
     @GetMapping("/find/{id}")
     public ResponseDTO<Optional<BookEntity>> findByIdOptional(@PathVariable Long id) {
-        try {
-            return new ResponseDTO<>("Libro encontrado",true,bookService.findById(id));
-        }catch (Exception e) {
-            return new ResponseDTO<>("Libro no encontrado",false,null);
+        try{
+            Optional<BookEntity> book = bookService.findById(id);
+            if (book.isPresent()) {
+                return new ResponseDTO<>("Libro encontrado",true,book);
+            }else{
+                return new ResponseDTO<>("Libro no encontrado",false,null);
+            }
+        }catch(Exception e){
+            return new ResponseDTO<>(e.getLocalizedMessage(),false,null);
         }
     }
 
@@ -61,9 +71,9 @@ public class BookController {
     @PostMapping("/createBook")
     public ResponseDTO<BookEntity> createBook(@RequestBody BookEntity book) {
         try {
-            return new ResponseDTO<>("Libro se actualiza",true,bookService.saveBook(book));
+            return new ResponseDTO<>("Libro se crea",true,bookService.saveBook(book));
         }catch (Exception e) {
-            return new ResponseDTO<>("Libro no se actualiza",false,null);
+            return new ResponseDTO<>("Libro no se crea",false,null);
         }
     }
 
@@ -78,7 +88,7 @@ public class BookController {
         try {
             return new ResponseDTO<>("Libro se actualiza",true,bookService.updateBook(book));
         }catch (Exception e) {
-            return new ResponseDTO<>("Libro no se actualiza",false,null);
+            return new ResponseDTO<>("Libro no existe",false,null);
         }
     }
 
@@ -92,9 +102,9 @@ public class BookController {
     public ResponseDTO<BookEntity> deleteBook(@PathVariable Long id) {
         try {
             bookService.deleteBook(id);
-            return new ResponseDTO<>("Libro se elimina",true,null);
+            return new ResponseDTO<>("Libro se eliminó",true,null);
         }catch (Exception e) {
-            return new ResponseDTO<>("Libro no se elimina",false,null);
+            return new ResponseDTO<>("Libro no existe",false,null);
         }
     }
 }
